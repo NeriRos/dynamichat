@@ -1,0 +1,20 @@
+{
+    "name": "lightx/dynamichat",
+    "description": "Chat client that connects with json to any server dynamicly",
+    "type": "project",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "NeriyaRosner",
+            "email": "neriya@lightx.co.il"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "dynamichat\\": "./",
+            "Inc\\": "./include"
+        }
+    }
+}
