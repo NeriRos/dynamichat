@@ -9,11 +9,12 @@
             "email": "neriya@lightx.co.il"
         }
     ],
-    "minimum-stability": "dev",
-    "require": {},
+    "require": {
+        "cboden/ratchet": "^0.4.1"
+    },
     "autoload": {
         "psr-4": {
-            "dynamichat\\": "./",
+            "Dynamichat\\": "./",
             "Inc\\": "./include"
         }
     }
