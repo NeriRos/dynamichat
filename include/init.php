@@ -14,7 +14,9 @@ final class Init
     {
         return [
             Pages\Admin::class,
+            Pages\Chat::class,
             Pages\ChatClient::class,
+            Pages\ChatDetails::class,
             Base\Enqueue::class,
             Base\Links::class,
         ];
