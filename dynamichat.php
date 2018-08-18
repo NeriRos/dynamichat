@@ -20,10 +20,12 @@ if( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) )
     require_once dirname( __FILE__ ) . '/vendor/autoload.php';
 }
 
+// Global vars
 define( 'PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PLUGIN_NAME', plugin_basename( __FILE__ ) );
 
+// De/activate plugin methods
 function activate() {
     Inc\Base\Activate::activate();
 }
@@ -34,9 +36,9 @@ function deactivate() {
 register_activation_hook( __FILE__, 'activate' );
 register_deactivation_hook( __FILE__, 'deactivate' );
 
-function get_local_file_contents( ) {
-    $file_path = PLUGIN_PATH . 'templates\chatClient.php';
-
+// Shortcodes
+function get_content($file_path) 
+{
     ob_start();
     include $file_path;
     $contents = ob_get_clean();
@@ -44,9 +46,20 @@ function get_local_file_contents( ) {
     return $contents;
 }
 
-add_shortcode( 'dynamichat', 'get_local_file_contents' );
+function chat_client_content( ) 
+{
+    return get_content(PLUGIN_PATH . 'templates\chatClient.php');
+}
 
+function chat_details_content( ) 
+{
+    return get_content(PLUGIN_PATH . 'templates\chatDetails.php');
+}
 
+add_shortcode( 'dynamichat', 'chat_client_content' );
+add_shortcode( 'dynamichat_details', 'chat_details_content' );
+
+// Init call
 if( class_exists( 'Inc\\Init' ) ) 
 {
     Inc\Init::register_services();
