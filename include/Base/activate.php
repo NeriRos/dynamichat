@@ -25,9 +25,8 @@ class Activate
             views int(5) NOT NULL,
             clicks int(5) NOT NULL,
             full_name char(20) NOT NULL,
-            business_name char(20) NOT NULL,
+            business_name char(20),
             phone int(10) NOT NULL,
-            is_company int(1) NOT NULL,
             UNIQUE KEY id (id)
         ) $charset_collate;";
 
@@ -50,6 +49,7 @@ class Activate
             message_text varchar(200) NOT NULL,
             message_date TIMESTAMP(1) NOT NULL,
             isSenderSelf int(1) NOT NULL,
+            is_company int(1) NOT NULL,
             message_status int(1) NOT NULL,
             contact int(9) NOT NULL,
             UNIQUE KEY id (id)
