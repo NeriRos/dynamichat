@@ -9,12 +9,12 @@ use Inc\Types\SupportUser;
 class ChatDetails
 {
     public $support = array();
-    
+
     function __construct()
     {}
-    
-    function register() 
-    {    
+
+    function register()
+    {
         add_action( 'rest_api_init', function () {
             register_rest_route( 'chat/v1', '/openSupport', array(
                     'methods' =>  \WP_REST_Server::CREATABLE,
@@ -22,24 +22,24 @@ class ChatDetails
             ) );
         } );
     }
-    
-    public static function open_support() 
+
+    public static function open_support()
     {
         global $wpdb;
 
         $userDetails = json_decode( file_get_contents('php://input'), true );
-        
+
         $user = new SupportUser( $userDetails['name'], $userDetails['phone'] );
         $user->set_business( $userDetails['business'] );
         $user->save_user();
-        
+
         $chatDetails = new self();
         $chatDetails->support = $chatDetails::send_user( $user );
 
         return $chatDetails;
     }
 
-    private static function send_user( $user ) 
+    private static function send_user( $user )
     {
         $args = array(
             'method' => \WP_REST_Server::CREATABLE,
@@ -62,7 +62,7 @@ class ChatDetails
         );
 
         $res = wp_remote_post( 'http://localhost:8887/support/openSupport', $args );
-        
+
         if ( is_wp_error( $res ) ) {
             $error_string = $res->get_error_message();
             echo '<div id="message" class="error"><p>' . $error_string . '</p></div>';
@@ -72,4 +72,4 @@ class ChatDetails
         // TODO: is available rep
         return json_decode( $res['body'] )->support;
     }
-} 
+}
