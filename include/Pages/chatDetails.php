@@ -4,9 +4,11 @@
  */
 namespace Inc\Pages;
 
+use Inc\Types\SupportUser;
+
 class ChatDetails
 {
-    public $user = array();
+    public $support = array();
     
     function __construct()
     {}
@@ -14,51 +16,60 @@ class ChatDetails
     function register() 
     {    
         add_action( 'rest_api_init', function () {
-            register_rest_route( 'chat/v1', '/details', array(
+            register_rest_route( 'chat/v1', '/openSupport', array(
                     'methods' =>  \WP_REST_Server::CREATABLE,
-                    'callback' => array( $this, 'create_account' )
+                    'callback' => array( $this, 'open_support' ) // 'self::open_support()'
             ) );
         } );
     }
-
-    public function create_account() {
-        global $wpdb;
-
-        $tmp_user = json_decode( file_get_contents('php://input'), true );
-        
-        $this->user = array(
-            'name' => $tmp_user['name'],
-            'business' => $tmp_user['business'],
-            'phone' => $tmp_user['phone']
-        );
-        $user_id = $this->save_user($this->user);
-        $this->user['id'] = $user_id;
-
-        return $user_id;
-    } 
-
-    private function save_user($user) {
-        global $wpdb;
-
-        $tablename = $wpdb->prefix . 'dynamichat_users';
-        if ( $user['name'] && $user['phone'] )
-        {
-            $res = $wpdb->insert( $tablename, array(
-                    'full_name' => $user['name'], 
-                    'business_name' => $user['business'],
-                    'phone' => $user['phone'] 
-                ), array( '%s', '%s', '%s') 
-            );
-
-            return ( $res == 1 ? $wpdb->insert_id : false );
-        } 
-        else
-        {
-            return "no user data";
-        }
-    }
     
-    public function get_user_id() {
-        return $this->user['id'];
-     }
+    public static function open_support() 
+    {
+        global $wpdb;
+
+        $userDetails = json_decode( file_get_contents('php://input'), true );
+        
+        $user = new SupportUser( $userDetails['name'], $userDetails['phone'] );
+        $user->set_business( $userDetails['business'] );
+        $user->save_user();
+        
+        $chatDetails = new self();
+        $chatDetails->support = $chatDetails::send_user( $user );
+
+        return $chatDetails;
+    }
+
+    private static function send_user( $user ) 
+    {
+        $args = array(
+            'method' => \WP_REST_Server::CREATABLE,
+            'headers' => array(
+                'Content-type' => 'application/json',
+                'origin' => 'localhost:15255'
+            ),
+            'timeout' => 1000,
+            'body' => json_encode(
+                array(
+                    'user' => array(
+                        'id' => $user->get_id(),
+                        'name' => $user->get_name(),
+                        'phone' => $user->get_phone(),
+                        'business' => $user->get_business()
+                    ),
+                    'isNewSupport' => true
+                )
+            )
+        );
+
+        $res = wp_remote_post( 'http://localhost:8887/support/openSupport', $args );
+        
+        if ( is_wp_error( $res ) ) {
+            $error_string = $res->get_error_message();
+            echo '<div id="message" class="error"><p>' . $error_string . '</p></div>';
+            return;
+        }
+
+        // TODO: is available rep
+        return json_decode( $res['body'] )->support;
+    }
 } 
