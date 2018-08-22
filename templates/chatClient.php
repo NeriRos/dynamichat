@@ -93,7 +93,7 @@
         }
     }
 
-    function addMessages(chats, clean = false, representative = false) {
+    function addMessages(chats, clean = true, representative = false) {
         if (!Array.isArray(chats))
             chats = [chats];
 
@@ -107,6 +107,7 @@
                 var picture = representative ? "/wp-content/plugins/dynamichat/assets/" + representative.picture + ".png" : '#';
 
                 newMessageEl.id = chat._id;
+                newMessageEl.setAttribute('data-date', chat.date.toTimeString());
                 newMessageEl.querySelector('.message').classList.add(isChatClient ? "client" : "representative");
                 newMessageEl.querySelector('.message_picture').setAttribute('src', picture);
                 newMessageEl.querySelector('.message_text').innerHTML = chat.message;
@@ -136,7 +137,7 @@
 
     function refreshDom(section, elementsAndChats, clean) {
         if(elementsAndChats.length > section.childElementCount) {
-            var elementIDs = [];
+            var elementDates = [];
             if (clean) {
                 while (section.firstChild) {
                     section.removeChild(section.firstChild);
@@ -146,12 +147,14 @@
                 return new Date(a.chat.date) - new Date(b.chat.date);
             });
             elementsAndChats.forEach((elementAndChat) => {
-                if (elementIDs.indexOf(elementAndChat.element.id) === -1) {
+                if (elementDates.indexOf(elementAndChat.element.getAttribute('data-date')) === -1) {
                     section.append(elementAndChat.element);
-                    elementIDs.push(elementAndChat.element.id);
+                    elementDates.push(elementAndChat.element.getAttribute('data-date'));
                 }
             });
             elementsAndChats[elementsAndChats.length - 1].element.scrollIntoView();
+        } else {
+            console.log("NO NEW MESSAGES");
         }
     }
 
