@@ -2,7 +2,7 @@
 /**
  * @package dynamichat
  */
-namespace Inc\Api\Callbacks;
+// namespace Inc\Api\Callbacks;
 
 class ChatSettingsCallback
 {

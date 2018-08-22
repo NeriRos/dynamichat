@@ -2,17 +2,20 @@
 /**
  * @package dynamichat
  */
-namespace Inc\Pages;
+// namespace Inc\Pages;
 
-use Inc\Api\SettingsApi;
-use Inc\Api\Callbacks\ChatSettingsCallback;
+// use Inc\Api\SettingsApi;
+// use Inc\Api\Callbacks\ChatSettingsCallback;
 
-class Admin 
+_require( INC_API, 'settingsApi' );
+_require( INC_API . 'Callbacks/', 'chatSettingsCallback' );
+
+class Admin
 {
     public $settings;
     public $callbacks;
 
-    public function register() 
+    public function register()
     {
         add_action( 'admin_menu', array( $this, 'add_admin_pages' ) );
 
@@ -25,21 +28,21 @@ class Admin
 
         $this->settings->register();
     }
-    
-    public function add_admin_pages() 
+
+    public function add_admin_pages()
     {
         add_menu_page("DynamiChat Plugin", "DynamiChat", "manage_options", "dynamichat_settings", array( $this, 'admin_index' ), 'dashicons-format-chat', 110);
     }
 
-    public function admin_index() 
+    public function admin_index()
     {
         require_once PLUGIN_PATH . 'templates/admin.php' ;
     }
 
-    public function set_settings() 
+    public function set_settings()
     {
         $args = array(
-            array( 
+            array(
                 'option_group' => 'chat_options_group',
                 'option_name' => 'server_uri',
                 'callback' => array( $this->callbacks, 'server_uri_check' )
@@ -49,7 +52,7 @@ class Admin
         $this->settings->set_settings( $args );
     }
 
-    public function set_sections() 
+    public function set_sections()
     {
         $args = array(
             array( // chat_settings_section

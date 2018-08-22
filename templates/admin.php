@@ -14,7 +14,7 @@
         <?php settings_errors(); ?>
 
         <form method="post" action="options.php">
-            <?php 
+            <?php
                 settings_fields( 'chat_options_group' );
                 do_settings_sections( 'dynamichat_settings' );
                 submit_button();

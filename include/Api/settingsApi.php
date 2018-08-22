@@ -2,7 +2,7 @@
 /**
  * @package dynamichat
  */
-namespace Inc\Api;
+// namespace Inc\Api;
 
 class SettingsApi 
 {

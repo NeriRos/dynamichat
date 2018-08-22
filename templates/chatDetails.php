@@ -25,20 +25,20 @@
         }
 
 		document.body.appendChild(form);
-		
-		//note I am using a post.htm page since I did not want to make double request to the page 
+
+		//note I am using a post.htm page since I did not want to make double request to the page
 	   //it might have some Page_Load call which might screw things up.
 		window.open("post.htm", name, windowoption);
-		
+
 		form.submit();
-		
+
 		document.body.removeChild(form);
     }
 
    function openSupport(e)
    {
         e.preventDefault();
-        
+
         var xhttp = new XMLHttpRequest();
 
         var user = {
@@ -52,7 +52,7 @@
         xhttp.onreadystatechange = function()
         {
             if(xhttp.readyState == 4 && xhttp.status == 200 && xhttp.responseText)
-            {  
+            {
                 var support = JSON.parse(xhttp.responseText);
 
                 if (support.support) {
@@ -62,8 +62,8 @@
                 }
             }
         }
-        xhttp.send(JSON.stringify(user));	    		
-        
+        xhttp.send(JSON.stringify(user));
+
         return false;
     }
     function businessInputToggle(show) {
@@ -72,7 +72,7 @@
 </script>
 <style>
     :root {
-        --main-color: coral; 
+        --main-color: coral;
     }
 	.chatDetailsInput {
 		margin-bottom: 10px !important;
@@ -94,7 +94,6 @@
 		border: solid 1px var(--main-color) !important;
 		text-align: center !important;
 	}
-	
 </style>
 <div class="chatDetailsForm">
     <form action="/wp-json/chat/v1/details" method="POST" onsubmit="return openSupport(event)">

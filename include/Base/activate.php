@@ -2,15 +2,19 @@
 /**
  * @package dynamichat
  */
-namespace Inc\Base;
+// namespace Inc\Base;
 
 
 class Activate
 {
+    function __construct() {
+        if (false) {}
+    }
+
     public static function activate() {
         self::create_users_table();
         self::create_messages_table();
-    
+
         flush_rewrite_rules();
     }
 

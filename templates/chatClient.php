@@ -1,8 +1,8 @@
 <script>
     var chatIds = [];
+    var allElementsAndChats = []
     var support = {client: {}};
     var chatClient, getChatsInterval, waiting, dynamichatEl, messageTemplate, messagesSection;
-
     <?php
     if( isset( $_POST['support'] ) ) {
         echo 'support = ' . $_POST['support'] . ';';
@@ -16,29 +16,29 @@
         waiting = document.querySelector('#waiting');
         dynamichatEl = document.querySelector('#dynamichat');
         messageTemplate = dynamichatEl.querySelector('#first_msg');
+        messagesSection = dynamichatEl.querySelector('.dynamichat_messages');
 
         init();
 
-        /*
-            try {
-                var conn = new WebSocket('ws://localhost:8080');
-                conn.onmessage = (e) => {
-                    console.log(e.data);
-                }
-                conn.onopen = (e) => {
-                    console.log("Connection established!");
-                }
-            } catch (e) {
-                console.log(e);
-            }
+        // try {
+        //     var conn = new WebSocket('ws://localhost:8080');
+        //     conn.onmessage = (e) => {
+        //         console.log(e.data);
+        //     }
+        //     conn.onopen = (e) => {
+        //         console.log("Connection established!");
+        //         conn.send("TEST");
+        //     }
+        // } catch (e) {
+        //     console.log(e);
+        // }
 
-            document.getElementById("message").addEventListener("keyup", (event) => {
-                event.preventDefault();
-                if (event.keyCode === 13) {
-                    sendMessage();
-                }
-            });
-        */
+        document.getElementById("message").addEventListener("keyup", (event) => {
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                sendMessage();
+            }
+        });
     }
 
     function init() {
@@ -49,14 +49,14 @@
         });
     }
 
-    function getChats(clean = false) {
+    function getChats(clean = true /*false*/) {
         ajax("GET", `chat/v1/messages?userID=${support.client.id}&chatID=${support._id}`, null, (data) => {
             document.querySelector('#chat_header').innerHTML = 'DynamiChat';
             data = JSON.parse(data);
 
             toggleWaitingRep(!data.isAvailableRep);
 
-            addMessages(data.chats || [], clean);
+            addMessages(data.chats || [], clean, data.representative);
         });
     }
 
@@ -72,7 +72,8 @@
                 isSenderSelf: true,
                 status: 0,
                 id: support._id,
-                chatID: chatIds.length+1
+                _id: chatIds.length+1,
+                sent: true
             };
             var elements = addMessages(data);
             msgElement.value = "";
@@ -82,31 +83,32 @@
                 var serverRes = resData.server;
                 var message = resData.message;
 
-                elements[0].chat.id = message.id;
-                elements[0].chat.status = message.status;
+                if (elements[0]) {
+                    elements[0].chat.id = message.id;
+                    elements[0].chat.status = message.status;
 
-                changeStatus(elements[0], message);
+                    changeStatus(elements[0], message);
+                }
             });
         }
     }
 
-    function addMessages(chats, clean = false) {
+    function addMessages(chats, clean = false, representative = false) {
         if (!Array.isArray(chats))
             chats = [chats];
 
         var newElements = [];
 
-        messagesSection = dynamichatEl.querySelector('.dynamichat_messages');
-
         for (var chat of chats) {
-            if (chat && chatIds.indexOf(chat._id) === -1) {
+            if (chat && chat._id && chatIds.indexOf(chat._id) === -1) {
                 chat.date = new Date(chat.date);
                 var isChatClient = chat.from == support.client.id && !support.initial;
                 var newMessageEl = messageTemplate.cloneNode(true);
+                var picture = representative ? "/wp-content/plugins/dynamichat/assets/" + representative.picture + ".png" : '#';
 
-                newMessageEl.removeAttribute('id');
+                newMessageEl.id = chat._id;
                 newMessageEl.querySelector('.message').classList.add(isChatClient ? "client" : "representative");
-                newMessageEl.querySelector('.message_picture').setAttribute('src', (chat.representative || {picture: "#"}).picture);
+                newMessageEl.querySelector('.message_picture').setAttribute('src', picture);
                 newMessageEl.querySelector('.message_text').innerHTML = chat.message;
                 newMessageEl.querySelector('.message_date').innerHTML = chat.date.toTimeString().split(' ')[0];
 
@@ -115,14 +117,16 @@
 
                 chatIds.push(chat._id);
 
+                allElementsAndChats.push({ element: newMessageEl, chat: chat });
                 var index = newElements.push({ element: newMessageEl, chat: chat });
 
-                refreshDom(messagesSection, newElements, clean);
+                refreshDom(messagesSection, allElementsAndChats, clean);
 
                 changeStatus(newElements[index - 1]);
 
-                if(typeof chat.id !== 'undefined')
-                    latestID = chat.chatID;
+                if (chat.sent) {
+                    latestID = chat._id;
+                }
             }
 
         }
@@ -131,19 +135,24 @@
     }
 
     function refreshDom(section, elementsAndChats, clean) {
-        if (clean) {
-            while (section.firstChild) {
-                section.removeChild(section.firstChild);
+        if(elementsAndChats.length > section.childElementCount) {
+            var elementIDs = [];
+            if (clean) {
+                while (section.firstChild) {
+                    section.removeChild(section.firstChild);
+                }
             }
+            elementsAndChats.sort((a, b) => {
+                return new Date(a.chat.date) - new Date(b.chat.date);
+            });
+            elementsAndChats.forEach((elementAndChat) => {
+                if (elementIDs.indexOf(elementAndChat.element.id) === -1) {
+                    section.append(elementAndChat.element);
+                    elementIDs.push(elementAndChat.element.id);
+                }
+            });
+            elementsAndChats[elementsAndChats.length - 1].element.scrollIntoView();
         }
-
-        elementsAndChats.sort((a, b) => {
-            return new Date(a.chat.date) - new Date(b.chat.date);
-        });
-        elementsAndChats.forEach((elementAndChat) => {
-            section.append(elementAndChat.element);
-        });
-        elementsAndChats[elementsAndChats.length - 1].element.scrollIntoView();
     }
 
     function changeStatus(datas) {
@@ -263,7 +272,7 @@
                         <div class="message col">
                             <div class="row">
                                 <div class="col-2">
-                                    <img src="#" class="message_picture" alt="user_picture">
+                                    <img src="#" height="50" width="50" class="message_picture" alt="user_picture">
                                 </div>
                                 <div class="col-6 message_body_container">
                                     <div class="message_body">

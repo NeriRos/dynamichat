@@ -2,21 +2,22 @@
 /**
  * @package dynamichat
  */
-namespace Inc\Pages;
+// namespace Inc\Pages;
+
 
 class ChatClient
 {
     public $chats = array();
     public $support = array();
     public $message = array();
-    
+
     function __construct()
-    {        
+    {
 
     }
-    
-    function register() 
-    {    
+
+    function register()
+    {
         add_action( 'rest_api_init', function () {
             register_rest_route( 'chat/v1', '/init', array(
                     'methods' =>  \WP_REST_Server::CREATABLE,
@@ -37,13 +38,15 @@ class ChatClient
                     'callback' => array( $this, 'send_message' )
             ) );
         } );
-    }  
+    }
 
     function init( $data ) {
         $data = json_decode(file_get_contents('php://input'), true);
-    
+
         $client = new self();
         $client->support = $data['support'];
+
+        // $chat = new Chat('0.0.0.0', 9000);
 
         return $client;
     }
@@ -55,9 +58,9 @@ class ChatClient
                 'origin' => 'localhost:15255'
             )
         );
-        
-        $res = wp_remote_post( 'http://localhost:8887/support/getChats/' . $_GET['chatID'] . '?id=' . $_GET['userID'], $args );
-        
+
+        $res = wp_remote_post( esc_attr( get_option( 'server_uri' ) ) . '/support/getChats/' . $_GET['chatID'] . '?id=' . $_GET['userID'], $args );
+
         if ( is_wp_error( $res ) ) {
             $error_string = $res->get_error_message();
             echo '<div id="message" class="error"><p>' . $error_string . '</p></div>';
@@ -65,17 +68,16 @@ class ChatClient
         }
 
         $body = json_decode( $res['body'] );
-        
         $chats = array_merge( $this->chats, $body->chats );
         $chats = array_map( array( $this, 'map_chats' ), $chats );
         // $chats = array_filter( $chats, array( $this, 'filter_chats' ) );
 
-        return array( 'chats' => $chats, 'isAvailableRep' => $body->isAvailableRep );
+        return array( 'chats' => $chats, 'isAvailableRep' => $body->isAvailableRep, 'representative' => ( $body->isAvailableRep ? $body->representative : false ) );
     }
 
     public function send_message() {
         $data = json_decode(file_get_contents('php://input'), true);
-        
+
         $this->message = array(
             'user' => $data['user'],
             'message' => $data['message'],
@@ -96,8 +98,8 @@ class ChatClient
             'body' => json_encode( $this->message )
         );
 
-        $res = wp_remote_post( 'http://localhost:8887/support/sendMessage', $args );
-        
+        $res = wp_remote_post( esc_attr( get_option( 'server_uri' ) ) . '/support/sendMessage', $args );
+
         if ( $res['response']['code'] == 200 ) {
             $this->message['status'] = 1;
             $this->message['to'] = json_decode( $res['body'] )->status;
@@ -109,23 +111,23 @@ class ChatClient
     }
 
     function save_message( $message ) {
-        global $wpdb; 
+        global $wpdb;
 
         $tablename = $wpdb->prefix . 'dynamichat_messages';
         if ( $message['message'] )
         {
             $res = $wpdb->insert( $tablename, array(
-                    'userID' => $message['id'], 
+                    'userID' => $message['id'],
                     'message_text' => $message['message'],
                     'message_date' => $message['date'],
                     'isSenderSelf' => ( $message['isSenderSelf'] ? 1 : 0),
                     'contact' => $message['to'],
                     'is_company' => 1,
-                ), array( '%s', '%s', '%s', '%s', '%s', '%s') 
+                ), array( '%s', '%s', '%s', '%s', '%s', '%s')
             );
 
             return ( $res == 1 ? $wpdb->insert_id : false );
-        } 
+        }
         else
         {
             return "no user data";
@@ -133,15 +135,15 @@ class ChatClient
     }
 
     function get_message_by_id( $id ) {
-        global $wpdb; 
+        global $wpdb;
 
         $tablename = $wpdb->prefix . 'dynamichat_messages';
         if ( $id )
         {
-            $res = $wpdb->get_results( 'SELECT * FROM ' . $tablename . ' WHERE id="' . $id . '";' ); 
-            
+            $res = $wpdb->get_results( 'SELECT * FROM ' . $tablename . ' WHERE id="' . $id . '";' );
+
             return $res;
-        } 
+        }
         else
         {
             return "no user data";

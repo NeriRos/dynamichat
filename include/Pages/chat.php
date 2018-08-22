@@ -4,55 +4,57 @@
  */
 namespace Inc\Pages;
 
-use Ratchet\MessageComponentInterface;
-use Ratchet\ConnectionInterface;
-use Ratchet\App;
+require_once(PLUGIN_PATH . 'include/Libs/websockets.php');
 
-class Chat implements MessageComponentInterface {
-    private $clients;
-    
-    function __construct()
-    {
-        $this->clients = new \SplObjectStorage;
-    }
 
-    function register() {
-        // Run the server application through the WebSocket protocol on port 8080
-        // $app = new \Ratchet\App('localhost', 8080);
-        // $app->route('/chat', new Chat);
-        // $app->run();
-    }
-    
-    public function onOpen(ConnectionInterface $conn) {
+class Chat extends \WebSocketServer {
+    // private $clients;
+
+    // function __construct()
+    // {
+    //     $this->clients = new \SplObjectStorage;
+    // }
+
+    // function register() {
+    //     // Run the server application through the WebSocket protocol on port 8080
+    //     // $app = new \Ratchet\App('localhost', 8080);
+    //     // $app->route('/chat', new Chat);
+    //     // $app->run();
+    // }
+
+    public function connected($conn) {
+        echo "test";
         // Store the new connection to send messages to later
-        $this->clients->attach($conn);
+        // $this->clients->attach($conn);
 
         echo "New connection! ({$conn->resourceId})\n";
     }
 
-    public function onMessage(ConnectionInterface $from, $msg) {
-        $numRecv = count($this->clients) - 1;
-        echo sprintf('Connection %d sending message "%s" to %d other connection%s' . "\n"
-            , $from->resourceId, $msg, $numRecv, $numRecv == 1 ? '' : 's');
+    public function process($from, $msg) {
+        // $numRecv = count($this->clients) - 1;
+        // echo sprintf('Connection %d sending message "%s" to %d other connection%s' . "\n"
+        //     , $from->resourceId, $msg, $numRecv, $numRecv == 1 ? '' : 's');
 
-        foreach ($this->clients as $client) {
-            if ($from !== $client) {
-                // The sender is not the receiver, send to each client connected
-                $client->send($msg);
-            }
-        }
+        // foreach ($this->clients as $client) {
+        //     if ($from !== $client) {
+        //         // The sender is not the receiver, send to each client connected
+        //         $client->send($msg);
+        //     }
+        // }
+
+        $this->send($user,$message);
     }
 
-    public function onClose(ConnectionInterface $conn) {
+    public function closed($conn) {
         // The connection is closed, remove it, as we can no longer send it messages
         $this->clients->detach($conn);
 
         echo "Connection {$conn->resourceId} has disconnected\n";
     }
 
-    public function onError(ConnectionInterface $conn, \Exception $e) {
-        echo "An error has occurred: {$e->getMessage()}\n";
+    // public function onError($conn, \Exception $e) {
+    //     echo "An error has occurred: {$e->getMessage()}\n";
 
-        $conn->close();
-    }
+    //     $conn->close();
+    // }
 }

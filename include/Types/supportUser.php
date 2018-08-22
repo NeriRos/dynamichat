@@ -2,7 +2,7 @@
 /**
  * @package dynamichat
  */
-namespace Inc\Types;
+// namespace Inc\Types;
 
 class SupportUser
 {

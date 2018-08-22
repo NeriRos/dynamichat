@@ -2,7 +2,7 @@
 /**
  * @package dynamichat
  */
-namespace Inc\Base;
+// namespace Inc\Base;
 
 class Links 
 {

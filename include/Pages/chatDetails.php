@@ -2,9 +2,11 @@
 /**
  * @package dynamichat
  */
-namespace Inc\Pages;
+// namespace Inc\Pages;
 
-use Inc\Types\SupportUser;
+// use Inc\Types\SupportUser;
+
+_require( INC_TYPES, 'supportUser' );
 
 class ChatDetails
 {
@@ -61,7 +63,7 @@ class ChatDetails
             )
         );
 
-        $res = wp_remote_post( 'http://localhost:8887/support/openSupport', $args );
+        $res = wp_remote_post( esc_attr( get_option( 'server_uri' ) ) . '/support/openSupport', $args );
 
         if ( is_wp_error( $res ) ) {
             $error_string = $res->get_error_message();
