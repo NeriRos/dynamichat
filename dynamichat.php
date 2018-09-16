@@ -1,13 +1,13 @@
 <?php
 /**
- * @package dynamichat-ws
+ * @package dynamichat
  */
 
 /*
 Plugin name: DynamiChat WebSockets
 Plugin URI: https://lightx.co.il/wp-plugins/dynamichat
-Description: Chat client that connects with json to any server dynamicly!
-Version: 1.0
+Description: Chat client that connects with websocket and ajax to any server dynamicly!
+Version: 1.1.0
 Author: Neriya Rosner - LightX
 Author URI: https://lightx.co.il/
 License: GPLv2 or later

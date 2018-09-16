@@ -3,7 +3,7 @@
 /**
  * trigger this file on uninstall
  * 
- * @package dynamichat-ws
+ * @package dynamichat
  */
 
 defined( 'WP_UNINSTALL_PLUGIN' ) or die;

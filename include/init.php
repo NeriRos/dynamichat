@@ -1,6 +1,6 @@
 <?php
 /**
- * @package dynamichat-ws
+ * @package dynamichat
  */
 namespace Inc;
 
