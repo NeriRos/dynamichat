@@ -1,0 +1,78 @@
+.message {
+    margin-bottom: 10px;
+}
+.message_body {
+    background-color: #007bff;
+    border-radius: 5px;
+    padding: 5px 10px 0 10px;
+}
+.message_status, message_date {
+    display: inline;
+}
+.message_status {
+    margin-left: 3px;
+    display: none;
+}
+.dynamichat_container {
+    margin-top: 5px;
+}
+.dynamichat_messages {
+    height: 230px;
+    overflow-y: scroll;
+}
+#waiting {
+    position: absolute;
+    display: none;
+    bottom: 0;
+}
+
+#first_msg {
+    display: none;
+}
+.message {
+    display: block;
+}
+.message.client .message_picture {
+    display: none;
+}
+.message.client .message_status {
+    display: inline;
+}
+.message.representative .message_picture {
+    display: block;
+}
+.message.representative .message_body {
+    float: left !important;
+    background-color: #949da5;
+}
+
+#chat_header_description {
+    display: none;
+}
+#chat_header_description span {
+    display: inline;
+}
+
+:root {
+    --main-color: coral;
+}
+.chatDetailsInput {
+    margin-bottom: 10px !important;
+    border: solid 1px var(--main-color) !important;
+}
+.chatDetailsInput, .chatDetailsInput::placeholder {
+    font: 14pt Calibri;
+    color: var(--main-color) !important;
+    text-align: right;
+}
+.chatDetailsHeader {
+    font: 20pt Calibri !important;
+    font-size: 24pt !important;
+    color: var(--main-color) !important;
+    text-align: right;
+}
+.chatDetailsSubmit {
+    font-size: 14pt !important;
+    border: solid 1px var(--main-color) !important;
+    text-align: center !important;
+}

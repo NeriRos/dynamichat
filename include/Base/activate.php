@@ -1,8 +1,8 @@
 <?php
 /**
- * @package dynamichat
+ * @package dynamichat-ws
  */
-// namespace Inc\Base;
+namespace Inc\Base;
 
 
 class Activate
@@ -12,8 +12,8 @@ class Activate
     }
 
     public static function activate() {
-        self::create_users_table();
-        self::create_messages_table();
+        // self::create_users_table();
+        // self::create_messages_table();
 
         flush_rewrite_rules();
     }

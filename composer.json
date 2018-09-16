@@ -1,6 +1,6 @@
 {
     "name": "lightx/dynamichat",
-    "description": "Chat client that connects with json to any server dynamicly",
+    "description": "Chat client that connects with json to any server dynamically",
     "type": "project",
     "license": "GPL",
     "authors": [
@@ -10,16 +10,14 @@
         }
     ],
     "require": {
+        "react/socket": "^v1.0.0",
         "cboden/ratchet": "^0.4.1",
-        "evenement/evenement": "^1.0"
+        "ratchet/pawl": "dev-master"
     },
     "autoload": {
         "psr-4": {
             "Dynamichat\\": "./",
             "Inc\\": "./include"
-        },
-        "classmap": [
-            "wp-includes/"
-        ]
+        }
     }
 }

@@ -1,8 +1,8 @@
 <?php
 /**
- * @package dynamichat
+ * @package dynamichat-ws
  */
-// namespace Inc\Types;
+namespace Inc\Types;
 
 class SupportUser
 {
@@ -19,34 +19,6 @@ class SupportUser
         $this->phone = $phone;
     }
 
-    public function save_user( $user = NULL ) {
-        global $wpdb;
-
-        if ( !$user )
-        {
-            $user = $this;
-        }
-
-        $tablename = $wpdb->prefix . $this->USERS_TABLE;
-        if ( $user->name && $user->phone )
-        {
-            $res = $wpdb->insert( $tablename, array(
-                    'full_name' => $user->name,
-                    'business_name' => $user->business,
-                    'phone' => $user->phone
-                ), array( '%s', '%s', '%s')
-            );
-
-            if( $res == 1 )
-                $user->id = $wpdb->insert_id;
-
-            return $res;
-        }
-        else
-        {
-            return "no user data";
-        }
-    }
     public function get_id(){
 		return $this->id;
 	}

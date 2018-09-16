@@ -1,10 +1,10 @@
 <?php
 /**
- * @package dynamichat
+ * @package dynamichat-ws
  */
 
 /*
-Plugin name: DynamiChat
+Plugin name: DynamiChat WebSockets
 Plugin URI: https://lightx.co.il/wp-plugins/dynamichat
 Description: Chat client that connects with json to any server dynamicly!
 Version: 1.0
@@ -15,36 +15,20 @@ License: GPLv2 or later
 
 ( defined( 'ABSPATH' ) and function_exists( 'add_action' ) ) or die;
 
-// if( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) )
-// {
-//     require_once dirname( __FILE__ ) . '/vendor/autoload.php';
-// }
+if( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) )
+{
+    require_once dirname( __FILE__ ) . '/vendor/autoload.php';
+}
+
+// require_once dirname( __FILE__ ) . '/chat-server.php';
 
 // Global vars
 define( 'PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PLUGIN_NAME', plugin_basename( __FILE__ ) );
 
-define( 'INC', plugin_dir_path( __FILE__ ) . 'include/' );
-define( 'INC_API', INC . "Api/" );
-define( 'INC_BASE', INC . "Base/" );
-define( 'INC_LIBS', INC . "Libs/" );
-define( 'INC_PAGES', INC . "Pages/" );
-define( 'INC_TYPES', INC . "Types/" );
-
-function _require( $path, $class ) {
-    if( !file_exists( $path . $class . ".php" ) )
-    {
-        return false;
-    }
-
-    require($path . $class . ".php");
-    return true;
-}
-
-_require( INC_BASE, 'activate' );
-_require( INC_BASE, 'deactivate' );
-_require( INC, 'init' );
+use Inc\Base\Activate;
+use Inc\Base\Deactivate;
 
 // De/activate plugin methods
 function activate() {
@@ -80,8 +64,6 @@ function chat_details_content( )
 add_shortcode( 'dynamichat', 'chat_client_content' );
 add_shortcode( 'dynamichat_details', 'chat_details_content' );
 
+
 // Init call
-if( class_exists( 'Init' ) )
-{
-    Init::register_services();
-}
+Inc\Init::register_services();

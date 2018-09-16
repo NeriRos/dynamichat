@@ -1,8 +1,8 @@
 <?php
 /**
- * @package dynamichat
+ * @package dynamichat-ws
  */
-// namespace Inc\Base;
+namespace Inc\Base;
 
 class Deactivate
 {

@@ -1,14 +1,11 @@
 <?php
 /**
- * @package dynamichat
+ * @package dynamichat-ws
  */
-// namespace Inc\Pages;
+namespace Inc\Pages;
 
-// use Inc\Api\SettingsApi;
-// use Inc\Api\Callbacks\ChatSettingsCallback;
-
-_require( INC_API, 'settingsApi' );
-_require( INC_API . 'Callbacks/', 'chatSettingsCallback' );
+use Inc\Api\SettingsApi;
+use Inc\Api\Callbacks\ChatSettingsCallback;
 
 class Admin
 {

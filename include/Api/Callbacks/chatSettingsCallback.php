@@ -1,8 +1,8 @@
 <?php
 /**
- * @package dynamichat
+ * @package dynamichat-ws
  */
-// namespace Inc\Api\Callbacks;
+namespace Inc\Api\Callbacks;
 
 class ChatSettingsCallback
 {

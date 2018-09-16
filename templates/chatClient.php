@@ -1,264 +1,10 @@
-<script>
-    var chatIds = [];
-    var allElementsAndChats = []
-    var support = {client: {}};
-    var chatClient, getChatsInterval, waiting, dynamichatEl, messageTemplate, messagesSection;
-    <?php
-    if( isset( $_POST['support'] ) ) {
-        echo 'support = ' . $_POST['support'] . ';';
-    } else {
-        echo 'console.log("no post data");';
-        die;
-    }
-    ?>
+<?php
+    $assets = explode( 'templates', explode( 'wpTesting', str_replace( '\\', '/', __DIR__ ) )[1] )[0] . "assets";
+?>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+<link rel="stylesheet" href="<?php echo $assets ?>/frontend/style.css">
 
-    window.onload = () => {
-        waiting = document.querySelector('#waiting');
-        dynamichatEl = document.querySelector('#dynamichat');
-        messageTemplate = dynamichatEl.querySelector('#first_msg');
-        messagesSection = dynamichatEl.querySelector('.dynamichat_messages');
-
-        init();
-
-        // try {
-        //     var conn = new WebSocket('ws://localhost:8080');
-        //     conn.onmessage = (e) => {
-        //         console.log(e.data);
-        //     }
-        //     conn.onopen = (e) => {
-        //         console.log("Connection established!");
-        //         conn.send("TEST");
-        //     }
-        // } catch (e) {
-        //     console.log(e);
-        // }
-
-        document.getElementById("message").addEventListener("keyup", (event) => {
-            event.preventDefault();
-            if (event.keyCode === 13) {
-                sendMessage();
-            }
-        });
-    }
-
-    function init() {
-        ajax("POST", "chat/v1/init", {support}, (_chatClient) => {
-            chatClient = _chatClient;
-
-            getChats(true);
-        });
-    }
-
-    function getChats(clean = true /*false*/) {
-        ajax("GET", `chat/v1/messages?userID=${support.client.id}&chatID=${support._id}`, null, (data) => {
-            document.querySelector('#chat_header').innerHTML = 'DynamiChat';
-            data = JSON.parse(data);
-
-            toggleWaitingRep(!data.isAvailableRep);
-
-            addMessages(data.chats || [], clean, data.representative);
-        });
-    }
-
-    function sendMessage() {
-        var msgElement = document.querySelector('#message');
-
-        if (msgElement.value && msgElement.value.length > 0) {
-            var data = {
-                user: support.client,
-                message: msgElement.value,
-                from: support.client.id,
-                date: new Date(),
-                isSenderSelf: true,
-                status: 0,
-                id: support._id,
-                _id: chatIds.length+1,
-                sent: true
-            };
-            var elements = addMessages(data);
-            msgElement.value = "";
-
-            ajax("POST", "chat/v1/new_message", data, (resData) => {
-                resData = JSON.parse(resData);
-                var serverRes = resData.server;
-                var message = resData.message;
-
-                if (elements[0]) {
-                    elements[0].chat.id = message.id;
-                    elements[0].chat.status = message.status;
-
-                    changeStatus(elements[0], message);
-                }
-            });
-        }
-    }
-
-    function addMessages(chats, clean = true, representative = false) {
-        if (!Array.isArray(chats))
-            chats = [chats];
-
-        var newElements = [];
-
-        for (var chat of chats) {
-            if (chat && chat._id && chatIds.indexOf(chat._id) === -1) {
-                chat.date = new Date(chat.date);
-                var isChatClient = chat.from == support.client.id && !support.initial;
-                var newMessageEl = messageTemplate.cloneNode(true);
-                var picture = representative ? "/wp-content/plugins/dynamichat/assets/" + representative.picture + ".png" : '#';
-
-                newMessageEl.id = chat._id;
-                newMessageEl.setAttribute('data-date', chat.date.toTimeString());
-                newMessageEl.querySelector('.message').classList.add(isChatClient ? "client" : "representative");
-                newMessageEl.querySelector('.message_picture').setAttribute('src', picture);
-                newMessageEl.querySelector('.message_text').innerHTML = chat.message;
-                newMessageEl.querySelector('.message_date').innerHTML = chat.date.toTimeString().split(' ')[0];
-
-                if (isChatClient)
-                    newMessageEl.querySelector('.message_body_container').classList.add("offset-6");
-
-                chatIds.push(chat._id);
-
-                allElementsAndChats.push({ element: newMessageEl, chat: chat });
-                var index = newElements.push({ element: newMessageEl, chat: chat });
-
-                refreshDom(messagesSection, allElementsAndChats, clean);
-
-                changeStatus(newElements[index - 1]);
-
-                if (chat.sent) {
-                    latestID = chat._id;
-                }
-            }
-
-        }
-
-        return newElements;
-    }
-
-    function refreshDom(section, elementsAndChats, clean) {
-        if(elementsAndChats.length > section.childElementCount) {
-            var elementDates = [];
-            if (clean) {
-                while (section.firstChild) {
-                    section.removeChild(section.firstChild);
-                }
-            }
-            elementsAndChats.sort((a, b) => {
-                return new Date(a.chat.date) - new Date(b.chat.date);
-            });
-            elementsAndChats.forEach((elementAndChat) => {
-                if (elementDates.indexOf(elementAndChat.element.getAttribute('data-date')) === -1) {
-                    section.append(elementAndChat.element);
-                    elementDates.push(elementAndChat.element.getAttribute('data-date'));
-                }
-            });
-            elementsAndChats[elementsAndChats.length - 1].element.scrollIntoView();
-        } else {
-            console.log("NO NEW MESSAGES");
-        }
-    }
-
-    function changeStatus(datas) {
-        if(!Array.isArray(datas))
-            datas = [datas];
-
-        for (var data of datas) {
-            if (data.element) {
-                var statusEl = data.element.querySelector('.message_status');
-
-                switch(data.chat.status) {
-                    case 0:
-                        statusEl.innerHTML = '';
-                        break;
-                    case 1:
-                        statusEl.innerHTML = '<i class="fa fa-check"></i>';
-                        break;
-                    case 2:
-                        statusEl.innerHTML = '<i class="fa fa-check-double"></i>';
-                        break;
-                }
-            } else {
-                console.log("NO ELEMENT");
-            }
-        }
-    }
-
-    function ajax(method, url, data, cb) {
-        var xhttp = new XMLHttpRequest();
-
-        xhttp.open(method, (url.startsWith('/') ? url : "/wp-json/"+url), true);
-        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhttp.onreadystatechange = () => {
-            if(xhttp.readyState == 4 && xhttp.status == 200)
-            {
-                if (cb)
-                    cb(xhttp.responseText);
-
-            }
-        }
-        xhttp.send(data && method == "POST" ? JSON.stringify(data) : "");
-    }
-
-    function toggleWaitingRep(isShow) {
-        waiting.style['display'] = isShow ? "flex" : "none";
-    }
-
-    if (getChatsInterval)
-        clearInterval(getChatsInterval);
-
-    getChatsInterval = setInterval(() => {
-        getChats();
-    }, 5000);
-
-</script>
-<style>
-    .message {
-        margin-bottom: 10px;
-    }
-    .message_body {
-        background-color: #007bff;
-        border-radius: 5px;
-        padding: 5px 10px 0 10px;
-    }
-    .message_status, message_date {
-        display: inline;
-    }
-    .message_status {
-        margin-left: 3px;
-        display: none;
-    }
-    .dynamichat_container {
-        margin-top: 5px;
-    }
-    .dynamichat_messages {
-        height: 230px;
-        overflow-y: scroll;
-    }
-    #waiting {
-        position: absolute;
-        bottom: 0;
-    }
-
-    #first_msg {
-        display: none;
-    }
-    .message {
-        display: block;
-    }
-    .message.client .message_picture {
-        display: none;
-    }
-    .message.client .message_status {
-        display: inline;
-    }
-    .message.representative .message_picture {
-        display: block;
-    }
-    .message.representative .message_body {
-        float: left !important;
-        background-color: #949da5;
-    }
-</style>
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="jumbotron dynamichat_container">
@@ -266,6 +12,10 @@
                 <div class="row justify-content-center">
                     <div class="dynamichat_header">
                     <h2 id="chat_header"></h2>
+                    <div id="chat_header_description">
+                        <span>Rep name: </span>
+                        <span id="repName"></span>
+                    </div>
                     <hr>
                 </div>
             </div>
@@ -288,7 +38,7 @@
                         </div>
                     </div>
 
-                    <label id="waiting" class="text-muted" style="display: none">waiting representative to join..</label>
+                    <label id="waiting" class="text-muted">waiting a representative to join..</label>
                 </div>
             </div>
             <div class="row">
@@ -307,6 +57,20 @@
         </div>
     </div>
 </div>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
+<script type="text/javascript" src="<?php echo $assets ?>/frontend/javascript.js"></script>
+<script>
+    var support = {client: {}};
 
+    <?php
+        if( isset( $_POST['support'] ) ) {
+            echo 'support = ' . $_POST['support'] . ';';
+        } else {
+            echo 'console.log("no post data");';
+            die;
+        }
+    ?>
+
+    window.addEventListener('load', () => {
+        init(support);
+    }, false);
+</script>

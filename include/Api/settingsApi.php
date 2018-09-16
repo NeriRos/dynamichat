@@ -1,8 +1,8 @@
 <?php
 /**
- * @package dynamichat
+ * @package dynamichat-ws
  */
-// namespace Inc\Api;
+namespace Inc\Api;
 
 class SettingsApi 
 {
