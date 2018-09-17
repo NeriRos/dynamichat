@@ -2,15 +2,15 @@
 /**
  * @package dynamichat
  */
-namespace Inc\Api;
+// namespace Inc\Api;
 
-class SettingsApi 
+class SettingsApi
 {
     public $settings = array();
     public $sections = array();
     public $fields = array();
 
-    public function register() 
+    public function register()
     {
         if ( ! empty( $this->settings ) ) {
             add_action( 'admin_init', array( $this, 'register_custom_fields' ) );

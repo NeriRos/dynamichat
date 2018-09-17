@@ -1,13 +1,13 @@
 <?php
-    $plugin_path = explode( 'templates', explode( 'wpTesting', str_replace( '\\', '/', __DIR__ ) )[1] )[0];
-    $templates = $plugin_path . 'templates/';
+    $plugin_path = '/wp-content' . explode( 'wp-content', str_replace( '\\', '/', __DIR__ ) )[1];
+    $assets = explode( 'templates', $plugin_path )[0] . 'assets';
 ?>
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<link rel="stylesheet" href="<?php echo $plugin_path ?>assets/frontend/style.css">
+<link rel="stylesheet" href="<?php echo $assets ?>/frontend/style.css">
 
 <div class="chatDetailsForm">
-    <form action="/wp-json/chat/v1/details" method="POST" onsubmit="return openSupport(event, '<?php echo $templates; ?>')">
+    <form action="/wp-json/chat/v1/details" method="POST" onsubmit="return openSupport(event, '<?php echo $plugin_path . '/'; ?>')">
         <div class="row">
             <div class="col">
                 <h2 class="text-right chatDetailsHeader">השאירו פרטים<br/><br/></h2>
@@ -47,4 +47,4 @@
         </div>
     </form>
 </div>
-<script type="text/javascript" src="<?php echo $plugin_path ?>assets/frontend/javascript.js"></script>
+<script type="text/javascript" src="<?php echo $assets ?>/frontend/javascript.js"></script>

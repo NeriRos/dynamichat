@@ -2,9 +2,11 @@
 /**
  * @package dynamichat
  */
-namespace Inc\Libs;
+// namespace Inc\Libs;
 
-use Inc\Pages\ChatClient;
+// use Inc\Pages\ChatClient;
+
+_require(INC_PAGES, 'chatClient');
 
 class Connection {
     private $id;

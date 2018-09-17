@@ -1,5 +1,6 @@
 <?php
-    $assets = explode( 'templates', explode( 'wpTesting', str_replace( '\\', '/', __DIR__ ) )[1] )[0] . "assets";
+    $plugin_path = '/wp-content' . explode( 'wp-content', str_replace( '\\', '/', __DIR__ ) )[1];
+    $assets = explode( 'templates', $plugin_path )[0] . 'assets';
 ?>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">

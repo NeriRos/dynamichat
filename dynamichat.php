@@ -15,20 +15,31 @@ License: GPLv2 or later
 
 ( defined( 'ABSPATH' ) and function_exists( 'add_action' ) ) or die;
 
-if( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) )
-{
-    require_once dirname( __FILE__ ) . '/vendor/autoload.php';
-}
+function _require( $path, $class ) {
+    if( !file_exists( $path . $class . ".php" ) )
+    {
+        return false;
+    }
 
-// require_once dirname( __FILE__ ) . '/chat-server.php';
+    require($path . $class . ".php");
+    return true;
+}
 
 // Global vars
 define( 'PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PLUGIN_NAME', plugin_basename( __FILE__ ) );
 
-use Inc\Base\Activate;
-use Inc\Base\Deactivate;
+define( 'INC', plugin_dir_path( __FILE__ ) . 'include/' );
+define( 'INC_API', INC . "Api/" );
+define( 'INC_BASE', INC . "Base/" );
+define( 'INC_LIBS', INC . "Libs/" );
+define( 'INC_PAGES', INC . "Pages/" );
+define( 'INC_TYPES', INC . "Types/" );
+
+_require( INC_BASE, 'activate' );
+_require( INC_BASE, 'deactivate' );
+_require( INC, 'init' );
 
 // De/activate plugin methods
 function activate() {
@@ -66,4 +77,4 @@ add_shortcode( 'dynamichat_details', 'chat_details_content' );
 
 
 // Init call
-Inc\Init::register_services();
+Init::register_services();

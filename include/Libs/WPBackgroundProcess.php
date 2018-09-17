@@ -2,7 +2,7 @@
 /**
  * @package dynamichat
  */
-namespace Inc\Libs;
+// namespace Inc\Libs;
 
 /**
  * Abstract WP_Background_Process class.

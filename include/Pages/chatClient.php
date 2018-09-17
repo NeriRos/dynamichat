@@ -2,9 +2,11 @@
 /**
  * @package dynamichat
  */
-namespace Inc\Pages;
+// namespace Inc\Pages;
 
-use Inc\Libs\Ajax;
+// use Inc\Libs\HttpClient;
+
+_require(INC_LIBS, 'httpClient');
 
 class ChatClient {
 
@@ -47,9 +49,9 @@ class ChatClient {
     public function get_chats()
     {
         $url = '/support/getChats/' . $_GET['chatID'] . '?id=' . $_GET['userID'];
-        $ajax = new Ajax( \WP_REST_Server::READABLE, $url, null );
+        $httpClient = new HttpClient( \WP_REST_Server::READABLE, $url, null );
 
-        $res = $ajax->send( null );
+        $res = $httpClient->send( null );
 
         if ( property_exists( $res, 'error' ) ) {
             return $res->error;
@@ -65,9 +67,9 @@ class ChatClient {
     public static function send_message( $data )
     {
         $url = '/support/sendMessage';
-        $ajax = new Ajax( \WP_REST_Server::CREATABLE, $url, null );
+        $httpClient = new HttpClient( \WP_REST_Server::CREATABLE, $url, null );
 
-        $res = $ajax->send( $data );
+        $res = $httpClient->send( $data );
 
         if ( property_exists( $res, 'error' ) ) {
             return array( 'error' => $res->error );

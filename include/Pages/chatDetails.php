@@ -2,9 +2,11 @@
 /**
  * @package dynamichat
  */
-namespace Inc\Pages;
+// namespace Inc\Pages;
 
-use Inc\Types\SupportUser;
+// use Inc\Types\SupportUser;
+
+_require(INC_TYPES, 'supportUser');
 
 class ChatDetails
 {

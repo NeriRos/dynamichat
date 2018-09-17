@@ -2,9 +2,9 @@
 /**
  * @package dynamichat
  */
-namespace Inc\Libs;
+// namespace Inc\Libs;
 
-class Ajax {
+class HttpClient {
     public $method;
     public $url;
     public $args;
