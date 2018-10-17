@@ -12,8 +12,8 @@ class ChatDetails
 {
     public $support = array();
 
-    function __construct()
-    {}
+    function __construct( )
+    {    }
 
     function register()
     {
@@ -25,6 +25,11 @@ class ChatDetails
         } );
     }
 
+    /**
+     * open support call for client.
+     * receive client details, send them to node server.
+     * @return ChatDetails object with support from node server
+     */
     public static function open_support()
     {
         $userDetails = json_decode( file_get_contents('php://input'), true );
@@ -32,13 +37,16 @@ class ChatDetails
         $user = new SupportUser( $userDetails['name'], $userDetails['phone'] );
         $user->set_business( $userDetails['business'] );
 
+        $nodeResponse = ChatDetails::open_support_node( $user );
+
         $chatDetails = new self();
-        $chatDetails->support = $chatDetails::send_user( $user );
+        $chatDetails->support = $nodeResponse->support;
+
 
         return $chatDetails;
     }
 
-    private static function send_user( $user )
+    private static function open_support_node( $user )
     {
         $args = array(
             'method' => \WP_REST_Server::CREATABLE,
@@ -68,6 +76,6 @@ class ChatDetails
         }
 
         // TODO: is available rep
-        return json_decode( $res['body'] )->support;
+        return json_decode( $res['body'] );
     }
 }

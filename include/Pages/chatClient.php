@@ -13,11 +13,10 @@ class ChatClient {
     public $chats = array();
     public $support = array();
     public $message = array();
+    public $nodeConnectionId;
 
-    function __construct()
-    {
-
-    }
+    function __construct( )
+    { }
 
     function register()
     {
@@ -36,7 +35,10 @@ class ChatClient {
         } );
     }
 
-    public function init( $data )
+    /**
+     * init chatClient with support, and return to server.
+     */
+    public function init()
     {
         $data = json_decode(file_get_contents('php://input'), true);
 
@@ -52,6 +54,10 @@ class ChatClient {
         $httpClient = new HttpClient( \WP_REST_Server::READABLE, $url, null );
 
         $res = $httpClient->send( null );
+
+        if ( !$res ) {
+            return null;
+        }
 
         if ( property_exists( $res, 'error' ) ) {
             return $res->error;

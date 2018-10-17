@@ -2,9 +2,10 @@
     $plugin_path = '/wp-content' . explode( 'wp-content', str_replace( '\\', '/', __DIR__ ) )[1];
     $assets = explode( 'templates', $plugin_path )[0] . 'assets';
 ?>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
 <link rel="stylesheet" href="<?php echo $assets ?>/frontend/style.css">
+<!-- <link rel="stylesheet" href="<?php // echo $assets ?>/frontend/libs/font-awesome.css"> -->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+<link rel="stylesheet" href="<?php echo $assets ?>/frontend/libs/bootstrap.min.css">
 
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -32,7 +33,8 @@
                                     <div class="message_body">
                                         <label class="message_text"></label>
                                         <br/>
-                                        <label class="message_date"></label><label class="message_status"></label>
+                                        <label class="message_date"></label>
+                                        <label class="message_status"></label>
                                     </div>
                                 </div>
                             </div>
@@ -58,20 +60,18 @@
         </div>
     </div>
 </div>
-<script type="text/javascript" src="<?php echo $assets ?>/frontend/javascript.js"></script>
+<script type="text/javascript" src="<?php echo $assets ?>/frontend/connection.js"></script>
+<script type="text/javascript" src="<?php echo $assets ?>/frontend/socketMessageManager.js"></script>
+<script type="text/javascript" src="<?php echo $assets ?>/frontend/chatClient.js"></script>
 <script>
     var support = {client: {}};
 
     <?php
         if( isset( $_POST['support'] ) ) {
-            echo 'support = ' . $_POST['support'] . ';';
+            echo 'window.support = ' . $_POST['support'] . ';';
         } else {
             echo 'console.log("no post data");';
             die;
         }
     ?>
-
-    window.addEventListener('load', () => {
-        init(support);
-    }, false);
 </script>

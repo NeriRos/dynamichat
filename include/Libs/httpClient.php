@@ -16,7 +16,7 @@ class HttpClient {
         $this->args = $args ? $args : array(
             'method' => \WP_REST_Server::READABLE,
             'headers' => array(
-                'origin' => 'localhost:12555'
+                'origin' => 'localhost:7347'
             )
         );
     }
@@ -36,7 +36,7 @@ class HttpClient {
     public static function error_handler( $error ) {
         $error_string = $error->get_error_message();
 
-        return [ 'error' => '<div id="message" class="error"><p>' . $error_string . '</p></div>' ];
+        return (object)[ 'error' => '<div id="message" class="error"><p>' . $error_string . '</p></div>' ];
     }
 }
 
