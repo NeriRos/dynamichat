@@ -74,6 +74,10 @@ class SocketMessageManager {
     onFindAvailableRepresentative(data) {
         const representative = data.support.representative;
         window.support.representative = representative;
+
+        if (data.chat)
+            addMessages(data.chat, true, representative);
+
         toggleWaitingRep(false, representative.name);
     }
 

@@ -155,7 +155,7 @@ function addMessages(chats, clean = true, representative = false) {
     for (var chat of chats) {
         chat.chatId = chat._id || chat.chatId;
 
-        if (chat && chat.chatId && window.chatIds.indexOf(chat.chatId) === -1) {
+        if (window.chatIds.indexOf(chat.chatId) === -1) {
             var isChatClient = chat.from == window.support.client.id && !window.support.initial;
             var newMessageEl = messageTemplate.cloneNode(true);
             var picture = representative ? "/wp-content/plugins/dynamichat/assets/" + representative.picture + ".png" : '#';
@@ -183,10 +183,7 @@ function addMessages(chats, clean = true, representative = false) {
             if (chat.sent) {
                 latestID = chat.chatId;
             }
-        } else {
-            console.log("chat already added or dosent exist");
         }
-
     }
 
     return newElements;
