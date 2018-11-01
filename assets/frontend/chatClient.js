@@ -1,5 +1,7 @@
 var chatClient, getChatsInterval, waiting, dynamichatEl, messageTemplate, messagesSection, repName, chatHeaderDescription;
 
+var websocketServerUri = `wss://wsphp.cargo-express.co.il`;
+
 window.chatIds = [];
 window.allElementsAndChats = []
 window.support = {client: {}, representative: {}};
@@ -73,7 +75,7 @@ function init(support) {
  */
 function initSocket() {
     try {
-        window.connection = new Connection(new WebSocket(`ws://${window.location.hostname}:9000`), window.user);
+        window.connection = new Connection(new WebSocket(websocketServerUri), window.user);
         window.connection.socket.onmessage = (msg) => {
             var data = JSON.parse(msg.data);
 
