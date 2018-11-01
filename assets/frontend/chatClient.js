@@ -73,16 +73,15 @@ function init(support) {
  */
 function initSocket() {
     try {
-        window.connection = new Connection(new WebSocket(`ws://${window.location.hostname}:9000`));
+        window.connection = new Connection(new WebSocket(`ws://${window.location.hostname}:9000`), window.user);
         window.connection.socket.onmessage = (msg) => {
             var data = JSON.parse(msg.data);
-            console.log("GOT DATA:", data.event, " - ", data);
 
             const socketMessageManager = new SocketMessageManager(data);
         };
         window.connection.socket.onopen = (e) => {
             console.log("connection established!");
-            window.connection.sendServerMessage({support: window.support, user: window.support.client}, SOCKET_EVENTS.SUPPORT_INIT);
+            window.connection.sendServerInit(window.support);
         };
     } catch (e) {
         console.log(e);
@@ -126,7 +125,6 @@ function sendMessage() {
             var data = {
                 support: window.support,
                 supportId: window.support._id,
-                user: window.user,
                 chat: {
                     message: msgElement.value,
                     from: window.user.id,

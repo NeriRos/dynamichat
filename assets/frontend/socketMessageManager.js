@@ -50,11 +50,11 @@ class SocketMessageManager {
     /**
      * support init event from server.
      *
-     * add php connection id to connection object for session id on server.
-     * @param {phpConnectionId: number} data with session ids.
+     * add php and node connection id to connection object for session id on server.
+     * @param {phpConnectionId: number, nodeConnectionId: number} data with session ids.
      */
     onSupportInit(data) {
-        // TODO: add ids to connection object.
+        window.connection.setConnectionIds(data.phpConnectionId, data.nodeConnectionId);
     }
 
     onSupportMessageRead(data) {
@@ -83,21 +83,25 @@ class SocketMessageManager {
 
     onClientMessage(data) {
         var chat = data.chat;
-        var chatId = chat.id - 1; // TODO: find why need to minus 1
-        var status = getStatus(chat.status);
+        if (chat) {
+            var chatId = chat.id - 1; // TODO: find why need to minus 1
+            var status = getStatus(chat.status);
 
-        window.chatIds[window.chatIds.indexOf(chatId)] = chat._id;
+            window.chatIds[window.chatIds.indexOf(chatId)] = chat._id;
 
-        window.allElementsAndChats.forEach((elementAndChat) => {
-            if (elementAndChat.chat.chatId === chatId) {
-                elementAndChat.element.querySelector('.message_status').innerHTML = status;
-                elementAndChat.element.id = chat._id;
-                elementAndChat.chat._id = chat._id;
-                elementAndChat.chat.status = chat.status;
+            window.allElementsAndChats.forEach((elementAndChat) => {
+                if (elementAndChat.chat.chatId === chatId) {
+                    elementAndChat.element.querySelector('.message_status').innerHTML = status;
+                    elementAndChat.element.id = chat._id;
+                    elementAndChat.chat._id = chat._id;
+                    elementAndChat.chat.status = chat.status;
 
-                return elementAndChat;
-            }
-        });
+                    return elementAndChat;
+                }
+            });
+        } else {
+            console.log("onClientMessage - no chat");
+        }
     }
 
     onSupportMessage(data) {
@@ -107,7 +111,7 @@ class SocketMessageManager {
         if (support && message) {
             addMessages(message, true, support.representative);
 
-            window.connection.sendServerMessage({support, chat: message, user: window.user}, window.SOCKET_EVENTS.MESSAGE_READ);
+            window.connection.sendServerMessage({support, chat: message}, window.SOCKET_EVENTS.MESSAGE_READ);
         } else {
             console.log("MISSING DATA: support -", support, "message -", message, "Data:", data);
         }
