@@ -1,3 +1,3 @@
-# test
+# DynamiChat
 
-csc
+PHP Websocket chat
